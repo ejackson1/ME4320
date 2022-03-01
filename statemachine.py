@@ -9,11 +9,41 @@ def stepper1Func(direction, rot, stepTime):
     # direction [boolean] T: CCW   F: CW
     # rot [int] 200 is full rotation
     # stepTime [float] time taken to complete a step (0.0005 is fastest reliable time for full step)
-    stepper1.motor_go(direction, "Full", rot, stepTime, False, 0.05)
+    stepper1.motor_go(direction, "Full", rot, stepTime, False, 0.0)
 def stepper2Func(direction, rot, stepTime):
-    stepper2.motor_go(direction, "Full", rot, stepTime, False, 0.05)
+    stepper2.motor_go(direction, "Full", rot, stepTime, False, 0.0)
 def stepper3Func(direction, rot, stepTime):
-    stepper3.motor_go(direction, "Full", rot, stepTime, False, 0.05)
+    stepper3.motor_go(direction, "Full", rot, stepTime, False, 0.0)
+    
+def servo1Func(angle):
+    kit.servo[0].angle = angle
+def servo2Func(angle):
+    kit.servo[1].angle = angle
+def servo3Func(angle):
+    kit.servo[2].angle = angle
+    
+def moveMotors(dir1, dir2, dir3,
+                 rot1, rot2, rot3,
+                 stepTime1, stepTime2, stepTime3,
+                 grip1, grip2, grip3):
+    p1 = Process(target=stepper1Func, args=(dir1, rot1, stepTime1))
+    p2 = Process(target=stepper2Func, args=(dir2, rot2, stepTime2))
+    p3 = Process(target=stepper3Func, args=(dir3, rot3, stepTime3))
+    p4 = Process(target=servo1Func, args=(grip1,))
+    p5 = Process(target=servo2Func, args=(grip2,))
+    p6 = Process(target=servo3Func, args=(grip3,))
+    p1.start()
+    p2.start()
+    p3.start()
+    p4.start()
+    p5.start()
+    p6.start()
+    p1.join()
+    p2.join()
+    p3.join()
+    p4.join()
+    p5.join()
+    p6.join()
 
 
 def initialization():
@@ -28,7 +58,7 @@ def initialization():
     ## MOTOR INITS ##
     
     # Stepper Motors
-    direction = True #CCW
+    direction = False #Down
     stepTime = 0.05
     stepper1Func(direction, 100, stepTime)
     stepper2Func(direction, 100, stepTime)
@@ -89,7 +119,7 @@ if __name__ == "__main__":
     step3 = 25
 
     # Encoder
-    encIn = 5
+    encIn = 21
 
     # Button
     btn = 26
@@ -107,12 +137,6 @@ if __name__ == "__main__":
     stepper1 = RpiMotorLib.A4988Nema(dir1, step1, microStep_pins, "A4988")
     stepper2 = RpiMotorLib.A4988Nema(dir2, step2, microStep_pins, "A4988")
     stepper3 = RpiMotorLib.A4988Nema(dir3, step3, microStep_pins, "A4988")
-    p1 = Process(target=stepper1Func)
-    p2 = Process(target=stepper2Func)
-    p3 = Process(target=stepper3Func)
-    p1.join()
-    p2.join()
-    p3.join()
 
     ## PIN INIT ##
 

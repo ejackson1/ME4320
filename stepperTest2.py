@@ -28,7 +28,7 @@ def encoderValue(channel):
     print(value)
 
 
-#GPIO.add_event_detect(encIn, GPIO.BOTH, callback=encoderValue, bouncetime=10)
+GPIO.add_event_detect(encIn, GPIO.BOTH, callback=encoderValue, bouncetime=25)
 
 kit = ServoKit(channels=16)
 
