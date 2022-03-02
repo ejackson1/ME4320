@@ -1,7 +1,7 @@
 import RPi.GPIO as GPIO
 import time
 from RpiMotorLib import RpiMotorLib
-from multiprocessing import Process, Pool
+from multiprocessing import Process
 from adafruit_servokit import ServoKit
 
 
@@ -80,70 +80,136 @@ def servo3Func(angle):
 direction = False
 stepTime = 0.005
 
+
 def moveMotors(dir1, dir2, dir3,
                  rot1, rot2, rot3,
-                 stepTime1, stepTime2, stepTime3,
-                 grip1, grip2, grip3):
+                 stepTime1, stepTime2, stepTime3):
     p1 = Process(target=stepper1Func, args=(dir1, rot1, stepTime1))
     p2 = Process(target=stepper2Func, args=(dir2, rot2, stepTime2))
     p3 = Process(target=stepper3Func, args=(dir3, rot3, stepTime3))
-    p4 = Process(target=servo1Func, args=(grip1,))
-    p5 = Process(target=servo2Func, args=(grip2,))
-    p6 = Process(target=servo3Func, args=(grip3,))
-    p1.start()
-    p2.start()
-    p3.start()
-    p4.start()
-    p5.start()
-    p6.start()
+    
+    if upDown is True:
+        p1.start()
+        time.sleep(0.2)
+        p2.start()
+        
+        time.sleep(0.2)
+        p3.start()
+
+    else:
+        p3.start()
+        time.sleep(0.2)
+        p2.start()
+        time.sleep(0.2)
+        p1.start()
     p1.join()
     p2.join()
     p3.join()
+    
+    
+    
+    
+def moveServos(grip1, grip2, grip3):
+    
+    p4 = Process(target=servo1Func, args=(grip1,))
+    p5 = Process(target=servo2Func, args=(grip2,))
+    p6 = Process(target=servo3Func, args=(grip3,))
+    p4.start()
+    p5.start()
+    p6.start()
     p4.join()
     p5.join()
     p6.join()
     
+def stepServo1(dir1, rot, stepTime, grip):
+    p1 = Process(target=stepper1Func, args=(dir1, rot, stepTime))
+    p2 = Process(target=servo1Func, args=(grip,))
+    p1.start()
+    time.sleep(0.5)
+    p2.start()
+    p1.join()
+    p2.join()
 
-dir1 = False
-dir2 = False
-dir3 = False
-rot1 = 50
-rot2 = 50
-rot3 = 50
+def stepServo2(dir2, rot, stepTime, grip):
+    p1 = Process(target=stepper2Func, args=(dir2, rot, stepTime))
+    p2 = Process(target=servo2Func, args=(grip,))
+    p1.start()
+    time.sleep(0.5)
+    p2.start()
+    p1.join()
+    p2.join()
+    
+def stepServo3(dir3, rot, stepTime, grip):
+    p1 = Process(target=stepper3Func, args=(dir3, rot, stepTime))
+    p2 = Process(target=servo3Func, args=(grip,))
+    p1.start()
+    time.sleep(0.5)
+    p2.start()
+    p1.join()
+    p2.join()
+    
+    
+dirDown = False
+dirUp = True
+rot = 45
 stepTime1 = 0.05
-stepTime2 = 0.05
-stepTime3 = 0.05
+stepTime = 0.005
 
-grip1 = openGrip1
-grip2 = openGrip2
-grip3 = openGrip3
+openGrip1 = 170
+openGrip2 = 160
+openGrip3 = 155
 
-moveMotors(dir1, dir2, dir3, rot1, rot2, rot3,
-           stepTime1, stepTime2, stepTime3,
-           grip1, grip2, grip3)
+closeGrip1 = 110
+closeGrip2 = 90
+closeGrip3 = 90
+moveServos(openGrip1, openGrip2, openGrip3)
+time.sleep(1)
+
+print("start")
+try:
+    
+    #moveServos(closeGrip1, closeGrip2, closeGrip3)
+    #time.sleep(0.1)
+    #moveMotors(dirUp, dirUp, dirUp, rot, rot, rot,
+    #           stepTime, stepTime, stepTime)
+    #time.sleep(0.1)
+    #moveServos(openGrip1, openGrip2, openGrip3)
+    #time.sleep(0.5)
+    #moveMotors(dirDown, dirDown, dirDown, rot, rot, rot,
+    #           stepTime, stepTime, stepTime)
+    
+    while True:
+        moveServos(closeGrip1, closeGrip2, closeGrip3)
+        time.sleep(0.1)
+        stepServo1(dirUp, rot, stepTime, openGrip1)
+        stepServo3(dirUp, rot, stepTime, openGrip3)
+        stepServo2(dirUp, rot, stepTime, openGrip2)
+        
+        
+        stepServo1(dirDown, rot, stepTime, closeGrip1)
+        stepServo3(dirDown, rot, stepTime, closeGrip1)
+        stepServo2(dirDown, rot, stepTime, closeGrip1)
+        
+    #moveServos(openGrip1, openGrip2, openGrip3)
+    
+    
+    
+    
+    
+except:
+    pass
+    #GPIO.cleanup()
 #stepTime1, stepTime2, stepTime3 = 0.005
 
 
 
 #print(time.time())
-while True:
-    rot = input("Please input rotation\n")
-    rot = int(rot)
-    p1 = Process(target=stepper1Func, args=(direction, rot, stepTime))
-    p2 = Process(target=stepper2Func, args=(direction, rot, stepTime))
-    #p3 = Process(target=stepper3Func)
-    p1.start()
-    p2.start()
-    #p3.start()
-    p1.join()
-    p2.join()
-    #p3.join()
 
 #kit.servo[1].angle = openGrip2
 #time.sleep(1)
 #stepper2Func(False, 90, 0.0025)
 #time.sleep(1)
-#kit.servo[1].angle = closeGrip2
+#kit.servo[1].anglue = closeGrip2
 #time.sleep(1)
 #stepper2Func(True,45, 0.0025)
 #time.sleep(1)
