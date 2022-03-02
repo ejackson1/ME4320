@@ -25,6 +25,7 @@ value = 0
 def encoderValue(channel):
     global value
     value += 1
+    value %= 210
     print(value)
 
 
@@ -121,41 +122,48 @@ def moveServos(grip1, grip2, grip3):
     p5.join()
     p6.join()
     
-def stepServo1(dir1, rot, stepTime, grip):
-    p1 = Process(target=stepper1Func, args=(dir1, rot, stepTime))
-    p2 = Process(target=servo1Func, args=(grip,))
-    p1.start()
-    time.sleep(0.5)
-    p2.start()
-    p1.join()
-    p2.join()
+def stepServo1(moved, dir1, rot, stepTime, grip):
+    if moved is False:
+        print("ran true")
+        p1 = Process(target=stepper1Func, args=(dir1, rot, stepTime))
+        p2 = Process(target=servo1Func, args=(grip,))
+        p1.start()
+        time.sleep(0.5)
+        p2.start()
+        
+        #return True
+        
+    #p1.join()
+    #p2.join()
 
-def stepServo2(dir2, rot, stepTime, grip):
-    p1 = Process(target=stepper2Func, args=(dir2, rot, stepTime))
-    p2 = Process(target=servo2Func, args=(grip,))
-    p1.start()
-    time.sleep(0.5)
-    p2.start()
-    p1.join()
-    p2.join()
+def stepServo2(moved, dir2, rot, stepTime, grip):
+    if moved is False:
+        p1 = Process(target=stepper2Func, args=(dir2, rot, stepTime))
+        p2 = Process(target=servo2Func, args=(grip,))
+        p1.start()
+        time.sleep(0.5)
+        p2.start()
+    #p1.join()
+    #p2.join()
     
-def stepServo3(dir3, rot, stepTime, grip):
-    p1 = Process(target=stepper3Func, args=(dir3, rot, stepTime))
-    p2 = Process(target=servo3Func, args=(grip,))
-    p1.start()
-    time.sleep(0.5)
-    p2.start()
-    p1.join()
-    p2.join()
+def stepServo3(moved, dir3, rot, stepTime, grip):
+    if moved is False:
+        p1 = Process(target=stepper3Func, args=(dir3, rot, stepTime))
+        p2 = Process(target=servo3Func, args=(grip,))
+        p1.start()
+        time.sleep(0.5)
+        p2.start()
+    #p1.join()
+    #p2.join()
     
     
 dirDown = False
 dirUp = True
 rot = 45
 stepTime1 = 0.05
-stepTime = 0.005
+stepTime = 0.0025
 
-openGrip1 = 170
+openGrip1 = 180
 openGrip2 = 160
 openGrip3 = 155
 
@@ -163,7 +171,7 @@ closeGrip1 = 110
 closeGrip2 = 90
 closeGrip3 = 90
 moveServos(openGrip1, openGrip2, openGrip3)
-time.sleep(1)
+#time.sleep(1)
 
 print("start")
 try:
@@ -177,18 +185,53 @@ try:
     #time.sleep(0.5)
     #moveMotors(dirDown, dirDown, dirDown, rot, rot, rot,
     #           stepTime, stepTime, stepTime)
-    
+    up1 = False
+    up2 = False
+    up3 = False
+    down1 = False
+    down2 = False
+    down3 = False
     while True:
         moveServos(closeGrip1, closeGrip2, closeGrip3)
-        time.sleep(0.1)
-        stepServo1(dirUp, rot, stepTime, openGrip1)
-        stepServo3(dirUp, rot, stepTime, openGrip3)
-        stepServo2(dirUp, rot, stepTime, openGrip2)
+        #time.sleep(0.1)
         
+        if value >= 0 and value < 30:
+            print(up1)
+            if up1 is False:
+                stepServo1(up1, dirUp, rot, stepTime, openGrip1)
+                up1 = True
+            #time.sleep(5)
+        elif value >= 30 and value < 60:
+            if up2 is False:
+                stepServo3(up2, dirUp, rot, stepTime, openGrip3)
+                up2 = True
+        elif value >= 60 and value < 90:
+            if up3 is False:
+                stepServo2(up3, dirUp, rot, stepTime, openGrip2)
+                up3 = True
         
-        stepServo1(dirDown, rot, stepTime, closeGrip1)
-        stepServo3(dirDown, rot, stepTime, closeGrip1)
-        stepServo2(dirDown, rot, stepTime, closeGrip1)
+        elif value >= 90 and value < 120:
+            if down1 is False:
+                stepServo1(down1, dirDown, rot, stepTime, openGrip1)
+                down1 = True
+        elif value >= 120 and value < 150:
+            if down2 is False:
+                stepServo3(down2, dirDown, rot, stepTime, openGrip3)
+                down2 = True
+        elif value >= 150 and value < 180:
+            if down3 is False:
+                stepServo2(down3, dirDown, rot, stepTime, openGrip2)
+                down3 = True
+        else:
+            print("ran else")
+            up1 = False
+            up2 = False
+            up3 = False
+            down1 = False
+            down2 = False
+            down3 = False
+            #pass
+            
         
     #moveServos(openGrip1, openGrip2, openGrip3)
     
