@@ -18,14 +18,18 @@ step3 = 25
 
 encIn = 21
 
+btn = 26
+
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(encIn, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(btn, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+
 
 value = 0
 def encoderValue(channel):
     global value
     value += 1
-    value %= 130
+    value %= 95
     print(value)
 
 
@@ -170,8 +174,13 @@ openGrip3 = 155
 closeGrip1 = 110
 closeGrip2 = 90
 closeGrip3 = 90
+
+GPIO.wait_for_edge(btn, GPIO.FALLING, bouncetime=100)
+print("wowo")
+
 moveServos(openGrip1, openGrip2, openGrip3)
 #time.sleep(1)
+
 
 print("start")
 try:
@@ -192,8 +201,10 @@ try:
     down2 = False
     down3 = False
     
-    m = 20
+    m = 15
     s = 0.2
+    
+    
     while True:
         #moveServos(closeGrip1, closeGrip2, closeGrip3)
         time.sleep(s)
