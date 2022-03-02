@@ -25,7 +25,7 @@ value = 0
 def encoderValue(channel):
     global value
     value += 1
-    value %= 121
+    value %= 130
     print(value)
 
 
@@ -128,7 +128,7 @@ def stepServo1(moved, dir1, rot, stepTime, grip):
         p1 = Process(target=stepper1Func, args=(dir1, rot, stepTime))
         p2 = Process(target=servo1Func, args=(grip,))
         p1.start()
-        time.sleep(0.2)
+        time.sleep(0.3)
         p2.start()
         
         #return True
@@ -141,7 +141,7 @@ def stepServo2(moved, dir2, rot, stepTime, grip):
         p1 = Process(target=stepper2Func, args=(dir2, rot, stepTime))
         p2 = Process(target=servo2Func, args=(grip,))
         p1.start()
-        time.sleep(0.2)
+        time.sleep(0.3)
         p2.start()
     #p1.join()
     #p2.join()
@@ -151,7 +151,7 @@ def stepServo3(moved, dir3, rot, stepTime, grip):
         p1 = Process(target=stepper3Func, args=(dir3, rot, stepTime))
         p2 = Process(target=servo3Func, args=(grip,))
         p1.start()
-        time.sleep(0.2)
+        time.sleep(0.3)
         p2.start()
     #p1.join()
     #p2.join()
@@ -193,38 +193,44 @@ try:
     down3 = False
     
     m = 20
+    s = 0.2
     while True:
-        moveServos(closeGrip1, closeGrip2, closeGrip3)
-        time.sleep(0.1)
+        #moveServos(closeGrip1, closeGrip2, closeGrip3)
+        time.sleep(s)
         
         if value >= 0 and value < m:
             #print(up1)
             if up1 is False:
                 stepServo1(up1, dirUp, rot, stepTime, openGrip1)
-                time.sleep(0.1)
                 up1 = True
+                time.sleep(s)
             #time.sleep(5)
         elif value >= m and value < 2*m:
             if up2 is False:
                 stepServo3(up2, dirUp, rot, stepTime, openGrip3)
                 up2 = True
+                time.sleep(s)
         elif value >= 2*m and value < 3*m:
             if up3 is False:
                 stepServo2(up3, dirUp, rot, stepTime, openGrip2)
                 up3 = True
+                time.sleep(s)
         
         elif value >= 3*m and value < 4*m:
             if down1 is False:
-                stepServo1(down1, dirDown, rot, stepTime, openGrip1)
+                stepServo1(down1, dirDown, rot, stepTime, closeGrip1)
                 down1 = True
+                time.sleep(s)
         elif value >= 4*m and value < 5*m:
             if down2 is False:
-                stepServo3(down2, dirDown, rot, stepTime, openGrip3)
+                stepServo3(down2, dirDown, rot, stepTime, closeGrip3)
                 down2 = True
+                time.sleep(s)
         elif value >= 5*m and value < 6*m:
             if down3 is False:
-                stepServo2(down3, dirDown, rot, stepTime, openGrip2)
+                stepServo2(down3, dirDown, rot, stepTime, closeGrip2)
                 down3 = True
+                time.sleep(s)
         else:
             print("ran else")
             up1 = False
